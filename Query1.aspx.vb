@@ -16,7 +16,7 @@ Partial Class _Default
     Dim _rowcount As Integer = 0
     Dim _sumpic As Integer = 0
     Dim _rowcount3 As Integer = 0
-    Dim kaz1 As Integer
+    Dim kaz1 As Integer = 0
 
 
 
@@ -56,6 +56,7 @@ Partial Class _Default
         TextBox1.Text = ""
         GridView3.Visible = True
         GridView3.SelectedIndex = -1
+
         Dim dbConn As OleDbConnection = Nothing
         Dim dc As OleDbCommand
         Dim dr As OleDbDataReader
@@ -113,6 +114,7 @@ Partial Class _Default
                 HyperLinkBest.Visible = False
                 TextKaz.Text = ""
                 kaz1 = 0
+                ButtonNextkep.Visible = True
 
             Finally
                 'clean up
@@ -196,8 +198,6 @@ Partial Class _Default
             End If
         End Try
 
-
-
         'get a reference to the image used for the bar in the row
         img = CType(FindControl("imgBook"), HtmlImage)
 
@@ -249,6 +249,7 @@ Partial Class _Default
         GridView1.SelectedIndex = -1
         TextBox1.Text = ""
         TextBox2.Text = ""
+        ButtonNextkep.Visible = False
     End Sub
 
     Protected Sub TextDeko_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles TextDeko.TextChanged
@@ -405,4 +406,15 @@ Partial Class _Default
         End If
     End Sub
 
+    Protected Sub Button2_Click(sender As Object, e As EventArgs) Handles ButtonNextkep.Click
+
+        If dlImages.SelectedIndex >= dlImages.Items.Count - 1 Then
+            dlImages.SelectedIndex = 0
+        Else
+            dlImages.SelectedIndex = dlImages.SelectedIndex + 1
+        End If
+        dlImages_SelectedIndexChanged(dlImages, EventArgs.Empty)
+        Response.Write("<script> window.open('" + HyperLinkNormal.NavigateUrl + "','_blank'); </script>")
+        'Response.Redirect(HyperLinkNormal.NavigateUrl)
+    End Sub
 End Class
