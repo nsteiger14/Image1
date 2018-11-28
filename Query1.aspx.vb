@@ -79,7 +79,7 @@ Partial Class _Default
             Try
                 'get the connection string from web.config and open a connection 
                 'to the database
-                strConnection = _
+                strConnection =
                   ConnectionStrings("dbConnectionString").ConnectionString
                 dbConn = New OleDb.OleDbConnection(strConnection)
                 dbConn.Open()
@@ -115,11 +115,11 @@ Partial Class _Default
                 kaz1 = 0
 
             Finally
-            'clean up
-            If (Not IsNothing(dbConn)) Then
-                dbConn.Close()
-            End If
-        End Try
+                'clean up
+                If (Not IsNothing(dbConn)) Then
+                    dbConn.Close()
+                End If
+            End Try
         End If
         If ix > maxegybe Or iy = 1 Then GridView3.SelectedIndex = 0
     End Sub
@@ -131,15 +131,15 @@ Partial Class _Default
         Dim vanilyen As Boolean
 
         'make sure this is an item in the data list (not header etc.)
-        If ((e.Item.ItemType = ListItemType.Item) Or _
+        If ((e.Item.ItemType = ListItemType.Item) Or
             (e.Item.ItemType = ListItemType.AlternatingItem)) Then
             'get a reference to the image used for the bar in the row
-            img = CType(e.Item.FindControl("imgThumbnail"),  _
+            img = CType(e.Item.FindControl("imgThumbnail"),
                         System.Web.UI.HtmlControls.HtmlImage)
 
             'set the source to the page that generates the thumbnail image
             k_az = CInt(CType(e.Item.DataItem, Data.Common.DbDataRecord)("k_az"))
-            img.Src = "Thumb0.aspx?ImageID=" & _
+            img.Src = "Thumb0.aspx?ImageID=" &
                       CStr(CType(e.Item.DataItem, Data.Common.DbDataRecord)("k_az"))
             img.Alt = "123.jpg"
             For i = 0 To GlobalVariables.ix
@@ -177,7 +177,7 @@ Partial Class _Default
         If TextVevo.Text = "" Then TextVevo.Text = UCase(Membership.GetUser().UserName)
         Try
             'get the connection string from web.config and open a connection to the database
-            strConnection = ConfigurationManager. _
+            strConnection = ConfigurationManager.
             ConnectionStrings("dbConnectionString").ConnectionString
             dbConn = New OleDb.OleDbConnection(strConnection)
             dbConn.Open()
@@ -189,11 +189,11 @@ Partial Class _Default
             If ax > 10 Then ax = ax - 10
             showfullimage = (ax = 1)
 
-            Finally
-                'clean up
-                If (Not IsNothing(dbConn)) Then
-                    dbConn.Close()
-                End If
+        Finally
+            'clean up
+            If (Not IsNothing(dbConn)) Then
+                dbConn.Close()
+            End If
         End Try
 
 
@@ -202,16 +202,16 @@ Partial Class _Default
         img = CType(FindControl("imgBook"), HtmlImage)
 
         'set the source to the page that generates the thumbnail image
-        img.Src = "Thumb1.aspx?ImageID=" & _
+        img.Src = "Thumb1.aspx?ImageID=" &
                   CStr(kaz) & "&imageFull=0"
         img.Visible = True
         img.Alt = "124.jpg"
         'HyperLinkNormal.Visible = shownormalimage
         HyperLinkNormal.Visible = True 'mindenki látja
-        HyperLinkNormal.NavigateUrl = "Thumb1.aspx?ImageID=" & _
+        HyperLinkNormal.NavigateUrl = "Thumb1.aspx?ImageID=" &
                   CStr(kaz) & "&imageFull=1"
         HyperLinkBest.Visible = showfullimage
-        HyperLinkBest.NavigateUrl = "Thumb2.aspx?ImageID=" & _
+        HyperLinkBest.NavigateUrl = "Thumb2.aspx?ImageID=" &
                   CStr(kaz)
     End Sub
 
@@ -281,7 +281,7 @@ Partial Class _Default
             Try
                 'get the connection string from web.config and open a connection 
                 'to the database
-                strConnection = _
+                strConnection =
                   ConnectionStrings("dbConnectionString").ConnectionString
                 dbConn = New OleDb.OleDbConnection(strConnection)
                 dbConn.Open()
