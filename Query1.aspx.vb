@@ -111,6 +111,7 @@ Partial Class _Default
                 img.Src = ""
                 img.Visible = False
                 HyperLinkNormal.Visible = False
+                ButtonDownload.Visible = False
                 HyperLinkBest.Visible = False
                 TextKaz.Text = ""
                 kaz1 = 0
