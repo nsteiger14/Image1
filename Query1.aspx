@@ -61,7 +61,8 @@
                             Font-Size="X-Small" ReadOnly="True" 
                             Width="42px" Visible="False"></asp:TextBox>
                         <asp:Label ID="Label4" runat="server" Text="Label" Visible="False"></asp:Label>
-                        <asp:Button ID="ButtonNextkep" runat="server" Font-Names="verdana" Font-Size="X-Small" Text="Next image in new tab" Visible="False" />
+                        <asp:Button ID="ButtonNextkep" runat="server" Font-Names="verdana" Font-Size="X-Small" Text="Next" Visible="False" />
+                        <asp:Button ID="ButtonDownload" runat="server" Font-Names="verdana" Font-Size="X-Small" Text="Download image" />
                         <br />
                         <asp:CheckBox ID="CheckByMinta" runat="server" Font-Names="verdana" 
                             Font-Size="X-Small" ForeColor="#FF9900" Text="By decor" TextAlign="Left" />

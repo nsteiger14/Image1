@@ -208,6 +208,7 @@ Partial Class _Default
         img.Alt = "124.jpg"
         'HyperLinkNormal.Visible = shownormalimage
         HyperLinkNormal.Visible = True 'mindenki látja
+        ButtonDownload.Visible = True
         HyperLinkNormal.NavigateUrl = "Thumb1.aspx?ImageID=" &
                   CStr(kaz) & "&imageFull=1"
         HyperLinkBest.Visible = showfullimage
@@ -232,6 +233,7 @@ Partial Class _Default
         img.Src = ""
         img.Visible = False
         HyperLinkNormal.Visible = False
+        ButtonDownload.Visible = False
         HyperLinkBest.Visible = False
         TextKaz.Text = ""
         TextKaz.Visible = Debugger.IsAttached
@@ -250,6 +252,7 @@ Partial Class _Default
         TextBox1.Text = ""
         TextBox2.Text = ""
         ButtonNextkep.Visible = False
+        ButtonDownload.Visible = False
     End Sub
 
     Protected Sub TextDeko_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles TextDeko.TextChanged
@@ -303,6 +306,8 @@ Partial Class _Default
                 dlImages.DataSource = dr
                 dlImages.SelectedIndex = -1
                 dlImages.DataBind()
+                'dlImages_SelectedIndexChanged(dlImages, EventArgs.Empty)
+
                 'get a reference to the image used for the bar in the row
                 img = CType(FindControl("imgBook"), HtmlImage)
 
@@ -414,7 +419,37 @@ Partial Class _Default
             dlImages.SelectedIndex = dlImages.SelectedIndex + 1
         End If
         dlImages_SelectedIndexChanged(dlImages, EventArgs.Empty)
-        Response.Write("<script> window.open('" + HyperLinkNormal.NavigateUrl + "','_blank'); </script>")
-        'Response.Redirect(HyperLinkNormal.NavigateUrl)
+        'Response.Write("<script> window.open('" + HyperLinkNormal.NavigateUrl + "','_blank'); </script>")
+    End Sub
+    Protected Sub Button2_Click1(sender As Object, e As EventArgs) Handles ButtonDownload.Click
+        DownloadKep()
+    End Sub
+
+    Protected Sub DownloadKep()
+        Dim dbConn As OleDbConnection = Nothing
+        Dim dc As OleDbCommand
+        Dim imageData() As Byte
+        Dim strConnection As String
+        Dim strSQL As String
+        'to the database
+        strConnection = ConfigurationManager.
+                  ConnectionStrings("dbConnectionString").ConnectionString
+        dbConn = New OleDb.OleDbConnection(strConnection)
+        dbConn.Open()
+        'build the query string and get the data from the database
+        strSQL = "select kep as thu from kep2"
+        strSQL = strSQL & " where k_az=" & CStr(GlobalVariables.k_az)
+        dc = New OleDbCommand(strSQL, dbConn)
+        imageData = CType(dc.ExecuteScalar(), Byte())
+        dbConn.Close()
+        Response.Clear()
+        Response.Buffer = True
+        Response.Charset = ""
+        Response.Cache.SetCacheability(HttpCacheability.NoCache)
+        Response.ContentType = "image/jpeg"
+        Response.AppendHeader("Content-Disposition", "attachment; filename=" + GlobalVariables.Termek + ".jpg")
+        Response.BinaryWrite(imageData)
+        Response.Flush()
+        Response.End()
     End Sub
 End Class
