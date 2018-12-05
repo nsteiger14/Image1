@@ -87,11 +87,12 @@ Partial Class _Default
                 dc = New OleDbCommand(strSQL, dbConn)
                 dr = dc.ExecuteReader()
                 dr.Read()
-                GlobalVariables.shownormalimage = CBool(dr(0).ToString)
-                GlobalVariables.shownormalimage = True
-                GlobalVariables.showfullimage = CBool(dr(1).ToString)
-                GlobalVariables.allowalldownload = CBool(dr(2).ToString)
-
+                If dr.HasRows Then
+                    GlobalVariables.shownormalimage = CBool(dr(0).ToString)
+                    GlobalVariables.shownormalimage = True
+                    GlobalVariables.showfullimage = CBool(dr(1).ToString)
+                    GlobalVariables.allowalldownload = CBool(dr(2).ToString)
+                End If
                 'build the query string and get the data from the database
                 p3 = CStr(GridView1.SelectedDataKey.Item(2))
                 GlobalVariables.alap1 = CStr(GridView1.SelectedDataKey.Item(1))
