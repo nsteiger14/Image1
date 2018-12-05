@@ -3,10 +3,8 @@ Option Strict On
 
 Imports System.Configuration.ConfigurationManager
 Imports System.Data
-Imports System.Data.Common
 Imports System.Data.OleDb
 Imports System.Diagnostics
-Imports System.Web.ApplicationServices
 
 
 
@@ -68,7 +66,7 @@ Partial Class _Default
         Dim p1, p2, p3 As String
         Dim maxegybe As Integer
 
-        maxegybe = 15
+        maxegybe = 50
 
         p1 = TextBox2.Text
         p2 = TextBox1.Text
@@ -85,8 +83,20 @@ Partial Class _Default
                 dbConn = New OleDb.OleDbConnection(strConnection)
                 dbConn.Open()
 
+                strSQL = "select normal,best,alldown from webfullimage where vevokod='" & TextVevo.Text & "'"
+                dc = New OleDbCommand(strSQL, dbConn)
+                dr = dc.ExecuteReader()
+                dr.Read()
+                GlobalVariables.shownormalimage = CBool(dr(0).ToString)
+                GlobalVariables.shownormalimage = True
+                GlobalVariables.showfullimage = CBool(dr(1).ToString)
+                GlobalVariables.allowalldownload = CBool(dr(2).ToString)
+
                 'build the query string and get the data from the database
                 p3 = CStr(GridView1.SelectedDataKey.Item(2))
+                GlobalVariables.alap1 = CStr(GridView1.SelectedDataKey.Item(1))
+                GlobalVariables.alap2 = ""
+                GlobalVariables.alap2 = p3
                 If CheckByMinta.Checked Then
                     If ix <= maxegybe Then p3 = ""
                     strSQL = "exec dbo.getlista3 '" + p1 + "','" + p3 + "','" + TextForm.Text + "','" + TextName.Text + "','" + TextLang.Text + "','" + TextVevo.Text + "',1,'" + TextForm.Text + "'"
@@ -95,6 +105,7 @@ Partial Class _Default
                     strSQL = "exec dbo.getlista3 '" + p1 + "','" + TextDeko.Text + "','" + p2 + "','','','" + TextVevo.Text + "',0,'" + TextForm.Text + "'"
                 End If
 
+                GlobalVariables.strSQL1 = strSQL
                 dc = New OleDbCommand(strSQL, dbConn)
                 ReDim GlobalVariables.azarray(999)
                 GlobalVariables.ix = 0
@@ -116,6 +127,7 @@ Partial Class _Default
                 TextKaz.Text = ""
                 kaz1 = 0
                 ButtonNextkep.Visible = True
+                ButtonAlldown.Visible = GlobalVariables.allowalldownload
 
             Finally
                 'clean up
@@ -124,7 +136,9 @@ Partial Class _Default
                 End If
             End Try
         End If
-        If ix > maxegybe Or iy = 1 Then GridView3.SelectedIndex = 0
+        If ix > maxegybe Or iy = 1 Then
+            GridView3.SelectedIndex = 0
+        End If
     End Sub
 
     Protected Sub dlImages_ItemDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.DataListItemEventArgs) Handles dlImages.ItemDataBound
@@ -160,13 +174,7 @@ Partial Class _Default
         Dim kaz As Integer = CInt(dlImages.DataKeys(dlImages.SelectedItem.ItemIndex))
         Dim img As System.Web.UI.HtmlControls.HtmlImage
         Dim dbConn As OleDbConnection = Nothing
-        Dim dc As OleDbCommand
         Dim strConnection As String
-        Dim strSQL As String
-        Dim shownormalimage As Boolean
-        Dim showfullimage As Boolean
-        Dim ax As Integer
-        Dim bx As Integer
 
         Dim index As Integer = dlImages.SelectedItem.ItemIndex
         Dim lbl As LinkButton = DirectCast(dlImages.Items(index).FindControl("LinkButton1"), LinkButton)
@@ -177,21 +185,12 @@ Partial Class _Default
         TextKaz.Text = CStr(kaz)
         TextKaz.Visible = Debugger.IsAttached
         TextVevo.ReadOnly = Not Debugger.IsAttached
-        If TextVevo.Text = "" Then TextVevo.Text = UCase(Membership.GetUser().UserName)
         Try
             'get the connection string from web.config and open a connection to the database
             strConnection = ConfigurationManager.
             ConnectionStrings("dbConnectionString").ConnectionString
             dbConn = New OleDb.OleDbConnection(strConnection)
             dbConn.Open()
-            strSQL = "select normal*10+best from webfullimage where vevokod='" & TextVevo.Text & "'"
-            dc = New OleDbCommand(strSQL, dbConn)
-            ax = CType(dc.ExecuteScalar(), Integer)
-            bx = CInt(Math.Truncate(ax / 10))
-            shownormalimage = (bx = 1)
-            If ax > 10 Then ax = ax - 10
-            showfullimage = (ax = 1)
-
         Finally
             'clean up
             If (Not IsNothing(dbConn)) Then
@@ -212,7 +211,7 @@ Partial Class _Default
         ButtonDownload.Visible = True
         HyperLinkNormal.NavigateUrl = "Thumb1.aspx?ImageID=" &
                   CStr(kaz) & "&imageFull=1"
-        HyperLinkBest.Visible = showfullimage
+        HyperLinkBest.Visible = GlobalVariables.showfullimage
         HyperLinkBest.NavigateUrl = "Thumb2.aspx?ImageID=" &
                   CStr(kaz)
     End Sub
@@ -254,6 +253,7 @@ Partial Class _Default
         TextBox2.Text = ""
         ButtonNextkep.Visible = False
         ButtonDownload.Visible = False
+        ButtonAlldown.Visible = False
     End Sub
 
     Protected Sub TextDeko_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles TextDeko.TextChanged
@@ -292,12 +292,14 @@ Partial Class _Default
                 dbConn.Open()
 
                 'build the query string and get the data from the database
+                GlobalVariables.alap2 = CStr(GridView3.SelectedDataKey.Item(1))
                 If CheckByMinta.Checked Then
                     strSQL = "exec dbo.getlista3 '" + p1 + "','" + p2 + "','" + TextForm.Text + "','" + TextName.Text + "','" + TextLang.Text + "','" + TextVevo.Text + "',1,null"
                 Else
                     strSQL = "exec dbo.getlista3 '" + p1 + "','" + TextDeko.Text + "','" + p2 + "','','','" + TextVevo.Text + "',0,null"
                 End If
 
+                GlobalVariables.strSQL1 = strSQL
                 dc = New OleDbCommand(strSQL, dbConn)
                 ReDim GlobalVariables.azarray(999)
                 GlobalVariables.ix = 0
@@ -453,4 +455,77 @@ Partial Class _Default
         Response.Flush()
         Response.End()
     End Sub
+    Protected Sub Button2_Click2(sender As Object, e As EventArgs) Handles ButtonAlldown.Click
+        'Dim archive = Server.MapPath("~/archive.zip")
+        'Dim temp = Server.MapPath("~/temp")
+        Dim zipalap = TextVevo.Text
+        Dim dbConn As OleDbConnection = Nothing
+        Dim dc As OleDbCommand
+        Dim dr As OleDbDataReader
+        Dim strConnection As String
+        Dim strSQL As String
+        Dim most As String
+        Dim termek, filename As String
+        Dim ix As Integer
+        Dim imageData() As Byte
+        'to the database
+        strConnection = ConfigurationManager.
+                  ConnectionStrings("dbConnectionString").ConnectionString
+        dbConn = New OleDb.OleDbConnection(strConnection)
+        dbConn.Open()
+        'build the query string and get the data from the database
+        strSQL = "select * from most1"
+        dc = New OleDbCommand(strSQL, dbConn)
+        most = CType(dc.ExecuteScalar(), String)
+        zipalap = zipalap + "_" + most
+        Dim archive = Server.MapPath("~/zip/" + zipalap + ".zip")
+        Dim temp = Server.MapPath("~/temp/" + zipalap)
+
+        If Not IO.Directory.Exists(temp) Then
+            IO.Directory.CreateDirectory(temp)
+        End If
+        If IO.File.Exists(archive) Then
+            IO.File.Delete(archive)
+        End If
+        dc = New OleDbCommand(GlobalVariables.strSQL1, dbConn)
+        dr = dc.ExecuteReader()
+        ix = 0
+        termek = GlobalVariables.alap1 + " " + GlobalVariables.alap2
+        termek = RTrim(termek)
+        While dr.Read()
+            ix = ix + 1
+            strSQL = "select kep as thu from kep2 where k_az=" & dr(0).ToString
+            dc = New OleDbCommand(strSQL, dbConn)
+            imageData = CType(dc.ExecuteScalar(), Byte())
+            filename = termek + " " + Right("0000" + ix.ToString, 4)
+            IO.File.WriteAllBytes(temp + "\" + filename + ".jpg", imageData)
+
+        End While
+        dbConn.Close()
+        IO.Compression.ZipFile.CreateFromDirectory(temp, archive)
+        If IO.Directory.Exists(temp) Then
+            DeleteFilesAndFoldersRecursively(temp)
+        End If
+        Response.Clear()
+        Response.Buffer = True
+        Response.Charset = ""
+        Response.Cache.SetCacheability(HttpCacheability.NoCache)
+        Response.ContentType = "application/x-zip-compressed"
+        Response.AppendHeader("Content-Disposition", "attachment; filename=" + termek + ".zip")
+        Response.TransmitFile(archive)
+        Response.Flush()
+        Response.End()
+    End Sub
+
+    Public Shared Sub DeleteFilesAndFoldersRecursively(ByVal target_dir As String)
+        For Each file As String In IO.Directory.GetFiles(target_dir)
+            IO.File.Delete(file)
+        Next
+        For Each subDir As String In IO.Directory.GetDirectories(target_dir)
+            DeleteFilesAndFoldersRecursively(subDir)
+        Next
+        System.Threading.Thread.Sleep(1)
+        IO.Directory.Delete(target_dir)
+    End Sub
+
 End Class
