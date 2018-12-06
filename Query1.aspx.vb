@@ -89,10 +89,11 @@ Partial Class _Default
                 dr.Read()
                 If dr.HasRows Then
                     GlobalVariables.shownormalimage = CBool(dr(0).ToString)
-                    GlobalVariables.shownormalimage = True
                     GlobalVariables.showfullimage = CBool(dr(1).ToString)
                     GlobalVariables.allowalldownload = CBool(dr(2).ToString)
                 End If
+                GlobalVariables.shownormalimage = True 'mindenkinek eengedélyezve
+                GlobalVariables.allowalldownload = True 'mindenkinek eengedélyezve
                 'build the query string and get the data from the database
                 p3 = CStr(GridView1.SelectedDataKey.Item(2))
                 GlobalVariables.alap1 = CStr(GridView1.SelectedDataKey.Item(1))
